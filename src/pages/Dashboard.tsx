@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -66,7 +65,7 @@ const Dashboard = () => {
         query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,display_name.ilike.%${searchTerm}%`);
       }
 
-      // Apply model type filter
+      // Apply model type filter - only apply if not 'all'
       if (modelTypeFilter !== 'all') {
         query = query.eq('model_type', modelTypeFilter);
       }
@@ -86,34 +85,31 @@ const Dashboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('models')
-        .select('model_type, data_source_id')
-        .then(async (result) => {
-          if (result.error) throw result.error;
-          
-          // Get total count
-          const { count: totalModels } = await supabase
-            .from('models')
-            .select('*', { count: 'exact', head: true });
+        .select('model_type, data_source_id');
 
-          // Get count by type
-          const typeStats = result.data.reduce((acc: Record<string, number>, model) => {
-            acc[model.model_type] = (acc[model.model_type] || 0) + 1;
-            return acc;
-          }, {});
+      if (error) throw error;
+      
+      // Get total count
+      const { count: totalModels } = await supabase
+        .from('models')
+        .select('*', { count: 'exact', head: true });
 
-          // Get data source stats
-          const { data: sourcesData } = await supabase
-            .from('data_sources')
-            .select('name, id');
+      // Get count by type
+      const typeStats = data.reduce((acc: Record<string, number>, model) => {
+        acc[model.model_type] = (acc[model.model_type] || 0) + 1;
+        return acc;
+      }, {});
 
-          return {
-            totalModels,
-            typeStats,
-            sourcesData
-          };
-        });
+      // Get data source stats
+      const { data: sourcesData } = await supabase
+        .from('data_sources')
+        .select('name, id');
 
-      return data;
+      return {
+        totalModels,
+        typeStats,
+        sourcesData: sourcesData || []
+      };
     },
   });
 
