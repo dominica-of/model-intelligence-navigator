@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, RefreshCw } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { StartScrapingSection } from '@/components/StartScrapingSection';
 
 interface Model {
   id: string;
@@ -217,6 +217,9 @@ const Dashboard = () => {
           </Card>
         </div>
       )}
+
+      {/* Start Scraping Section */}
+      <StartScrapingSection />
 
       {/* Scraping Status */}
       <ScrapingStatus />
