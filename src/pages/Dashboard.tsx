@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -39,9 +40,11 @@ interface Model {
   data_sources: { name: string };
 }
 
+type ModelTypeFilter = 'all' | 'language_model' | 'vision_model' | 'multimodal_model' | 'audio_model' | 'reinforcement_learning' | 'other';
+
 const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [modelTypeFilter, setModelTypeFilter] = useState('all');
+  const [modelTypeFilter, setModelTypeFilter] = useState<ModelTypeFilter>('all');
   const [sortBy, setSortBy] = useState('overall_score');
   const [sortOrder, setSortOrder] = useState('desc');
   const [page, setPage] = useState(0);
@@ -232,7 +235,7 @@ const Dashboard = () => {
               />
             </div>
             
-            <Select value={modelTypeFilter} onValueChange={setModelTypeFilter}>
+            <Select value={modelTypeFilter} onValueChange={(value: ModelTypeFilter) => setModelTypeFilter(value)}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Model Type" />
               </SelectTrigger>
